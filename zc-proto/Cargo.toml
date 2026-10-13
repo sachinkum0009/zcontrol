@@ -1,0 +1,10 @@
+[package]
+name = "zc-proto"
+description = "Z Control wire format: packed little-endian state/command structs compatible with zenbedded_hardware_interface"
+edition.workspace = true
+rust-version.workspace = true
+version.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]

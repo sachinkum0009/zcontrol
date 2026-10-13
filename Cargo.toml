@@ -1,0 +1,35 @@
+# Host-buildable crates. The ESP32-S3 firmware (zc-boards/esp32s3) is a separate
+# workspace because it needs the `esp` (Xtensa) toolchain and build-std.
+[workspace]
+members = ["zc-proto", "zc-core", "zc-drivers", "examples/virtual_device", "examples/latency_probe"]
+exclude = ["zc-boards/esp32s3"]
+resolver = "3"
+
+[workspace.package]
+edition = "2024"
+rust-version = "1.91.0"
+version = "0.1.0"
+license = "Apache-2.0"
+repository = "https://github.com/ros-controls/zenbedded"
+
+[workspace.dependencies]
+zc-proto = { path = "zc-proto" }
+zc-core = { path = "zc-core" }
+zc-drivers = { path = "zc-drivers" }
+
+# Pinned: zenoh-nostd is early development and its API still moves.
+zenoh-nostd = { git = "https://github.com/eclipse-zenoh/zenoh-nostd", rev = "e88f73a00c9825f5467918c271ee8f1b67f0f771" }
+zenoh-std = { git = "https://github.com/eclipse-zenoh/zenoh-nostd", rev = "e88f73a00c9825f5467918c271ee8f1b67f0f771" }
+
+embassy-executor = "0.9.1"
+embassy-futures = "0.1.2"
+embassy-sync = "0.7.2"
+embassy-time = "0.5.0"
+heapless = { version = "0.8", default-features = false }
+static_cell = "2.1.1"
+critical-section = "1.2"
+
+# zenoh-std depends on this fork (same patch as the zenoh-nostd workspace).
+[patch.crates-io.async-net]
+git = "https://github.com/Hennzau/async-net"
+rev = "f1ade444e88677b31b71ed1b7de0b2778d977aa8"

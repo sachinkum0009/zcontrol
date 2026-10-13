@@ -1,0 +1,17 @@
+[package]
+name = "zc-drivers"
+description = "Z Control sensor/actuator implementations"
+edition.workspace = true
+rust-version.workspace = true
+version.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[features]
+default = ["fake"]
+# Simulated devices for testing without hardware.
+fake = []
+
+[dependencies]
+zc-core.workspace = true
+embassy-time.workspace = true

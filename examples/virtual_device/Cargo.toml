@@ -1,0 +1,19 @@
+[package]
+name = "zc-virtual-device"
+description = "Z Control fake rover on a laptop (std), for testing zenbedded_hardware_interface without hardware"
+edition.workspace = true
+rust-version.workspace = true
+version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+
+[dependencies]
+zc-core = { workspace = true, features = ["log"] }
+zc-drivers.workspace = true
+zenoh-std.workspace = true
+embassy-executor = { workspace = true, features = ["arch-std", "executor-thread"] }
+embassy-time = { workspace = true, features = ["std"] }
+critical-section = { workspace = true, features = ["std"] }
+env_logger = "0.11"
+log = "0.4"

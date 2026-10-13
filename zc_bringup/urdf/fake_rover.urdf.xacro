@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<!--
+  Copyright 2026 Sachin Kumar
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="fake_rover">
+  <xacro:arg name="endpoint" default="tcp/127.0.0.1:7447"/>
+  <xacro:arg name="device" default="rover1"/>
+
+  <xacro:property name="wheel_radius" value="0.05"/>
+  <xacro:property name="wheel_separation" value="0.30"/>
+
+  <link name="base_link"/>
+
+  <xacro:macro name="wheel" params="side y">
+    <link name="${side}_wheel">
+      <visual>
+        <origin rpy="${pi/2} 0 0"/>
+        <geometry><cylinder radius="${wheel_radius}" length="0.02"/></geometry>
+      </visual>
+    </link>
+    <joint name="${side}_wheel_joint" type="continuous">
+      <parent link="base_link"/>
+      <child link="${side}_wheel"/>
+      <origin xyz="0 ${y} ${wheel_radius}"/>
+      <axis xyz="0 1 0"/>
+    </joint>
+  </xacro:macro>
+
+  <xacro:wheel side="left" y="${wheel_separation/2}"/>
+  <xacro:wheel side="right" y="${-wheel_separation/2}"/>
+
+  <!-- One board per <ros2_control> block. Keys must match the firmware's NodeConfig. -->
+  <ros2_control name="FakeRover" type="system">
+    <hardware>
+      <plugin>zenbedded_hardware_interface/ZenbeddedHardware</plugin>
+      <param name="zenoh_endpoint">$(arg endpoint)</param>
+      <param name="zenoh_mode">client</param>
+      <param name="state_topic">zc/$(arg device)/state</param>
+      <param name="command_topic">zc/$(arg device)/cmd</param>
+      <param name="schema_path">$(find zc_bringup)/config/fake_rover_schema.yaml</param>
+    </hardware>
+    <joint name="left_wheel_joint">
+      <command_interface name="velocity"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="right_wheel_joint">
+      <command_interface name="velocity"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+  </ros2_control>
+</robot>

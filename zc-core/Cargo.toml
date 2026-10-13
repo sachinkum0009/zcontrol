@@ -1,0 +1,21 @@
+[package]
+name = "zc-core"
+description = "Z Control device runtime: exposes a device to zenbedded_hardware_interface (ros2_control) over zenoh-nostd"
+edition.workspace = true
+rust-version.workspace = true
+version.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[features]
+default = []
+log = ["zenoh-nostd/log"]
+defmt = ["zenoh-nostd/defmt"]
+
+[dependencies]
+zc-proto.workspace = true
+zenoh-nostd.workspace = true
+embassy-futures.workspace = true
+embassy-sync.workspace = true
+embassy-time.workspace = true
+heapless.workspace = true

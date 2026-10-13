@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+
+concurrency:
+  # cancel previous runs of the same workflow, except for pushes on given branches
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/heads') }}
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  host:
+    name: Host crates (fmt, clippy, test)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Format
+        run: cargo fmt --all --check
+
+      - name: Clippy
+        run: cargo clippy --workspace --all-targets --locked -- -D warnings
+
+      - name: Test
+        run: cargo test --workspace --locked
+
+  esp32s3:
+    name: ESP32-S3 firmware (${{ matrix.device }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - device: fake rover
+            features: ""
+          - device: echo
+            features: "--features echo"
+    defaults:
+      run:
+        working-directory: zc-boards/esp32s3
+    env:
+      # Compiled into the firmware with env!(); the CI build is never flashed.
+      WIFI_SSID: ci
+      WIFI_PASSWORD: ci
+    steps:
+      - uses: actions/checkout@v4
+
+      # Same version as the local `esp` toolchain (see rust-toolchain.toml).
+      - uses: esp-rs/xtensa-toolchain@v1.6
+        with:
+          default: true
+          buildtargets: esp32s3
+          ldproxy: false
+          version: "1.97.0.0"
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: zc-boards/esp32s3
+
+      - name: Format
+        run: cargo fmt --check
+
+      - name: Clippy
+        run: cargo clippy --release --locked ${{ matrix.features }} -- -D warnings
+
+      - name: Build
+        run: cargo build --release --locked ${{ matrix.features }}

@@ -1,0 +1,20 @@
+[package]
+name = "zc-latency-probe"
+description = "Measures Z Control round-trip latency, jitter and loss against an Echo device"
+edition.workspace = true
+rust-version.workspace = true
+version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+
+[dependencies]
+zc-core = { workspace = true, features = ["log"] }
+zc-drivers.workspace = true
+zenoh-std.workspace = true
+embassy-executor = { workspace = true, features = ["arch-std", "executor-thread"] }
+embassy-futures.workspace = true
+embassy-time = { workspace = true, features = ["std"] }
+critical-section = { workspace = true, features = ["std"] }
+static_cell.workspace = true
+env_logger = "0.11"
